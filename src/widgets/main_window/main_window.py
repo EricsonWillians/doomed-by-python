@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QApplication, qApp, QAction
 from src import const
+from .actions.exit_action import ExitAction 
 
 
 class MainWindow(QMainWindow):
@@ -13,10 +14,7 @@ class MainWindow(QMainWindow):
         self.center()
         self.setWindowTitle(const.MAIN_WINDOW_TITLE)
 
-        exit_action = QAction('&Exit', self)
-        exit_action.setShortcut('Ctrl+Q')
-        exit_action.setStatusTip('Exit application')
-        exit_action.triggered.connect(qApp.quit)
+        exit_action = ExitAction(self)
 
         menu_bar = self.menuBar()
         file_menu = menu_bar.addMenu('&File')
