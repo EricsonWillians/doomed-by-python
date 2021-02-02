@@ -1,8 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QApplication, qApp, QAction
 from src import const
-from .actions.exit_action import ExitAction 
-
+from .actions.open_folder import OpenFolderAction
+from .actions.exit_action import ExitAction
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -14,11 +14,15 @@ class MainWindow(QMainWindow):
         self.center()
         self.setWindowTitle(const.MAIN_WINDOW_TITLE)
 
-        exit_action = ExitAction(self)
+        openFolderAction = OpenFolderAction(self)
+        exitAction = ExitAction(self)
 
-        menu_bar = self.menuBar()
-        file_menu = menu_bar.addMenu('&File')
-        file_menu.addAction(exit_action)
+        menuBar = self.menuBar()
+        fileMenu = menuBar.addMenu('&File')
+        fileMenu.addAction(openFolderAction)
+        fileMenu.addAction(exitAction)
+
+        helpMenu = menuBar.addMenu('&Help')
 
         self.show()
 
