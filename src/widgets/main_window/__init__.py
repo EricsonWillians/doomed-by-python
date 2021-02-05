@@ -1,11 +1,12 @@
 import sys
 from PyQt5.Qt import Qt
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 from src import const
 from .actions.open_action import OpenAction
 from .actions.exit_action import ExitAction
 from src.widgets.wad_list import WadList
-
+from src.widgets.path_input import PathInput
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -23,14 +24,32 @@ class MainWindow(QMainWindow):
         self.error_dialog = QErrorMessage()
 
         self.createMenu()
-        self.addComponents()
+        self.addWidgets()
 
         self.show()
 
-    def addComponents(self):
+    def addWidgets(self):
+        self.wadListLabel = QLabel("Wad List:")
         self.wadList = WadList()
-        self.grid.addWidget(self.wadList, 0, 0)
-
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.pathInputLabel = QLabel("GZDoom Path:")
+        self.pathInputLabel.setMaximumHeight(20)
+        self.pathInput = PathInput()
+        self.lostSoulLabel = QLabel()
+        self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
+        self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
+        self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
+        self.launchButton = QPushButton("Launch")
+        self.grid.addWidget(self.pathInputLabel, 0, 0)
+        self.grid.addWidget(self.pathInput, 1, 0)
+        self.grid.addWidget(self.wadListLabel, 2, 0)
+        self.grid.addWidget(self.wadList, 3, 0)
+        self.grid.addWidget(self.lostSoulLabel, 0, 1, 4, 1, Qt.AlignTop)
+        self.grid.addWidget(self.launchButton, 2, 1, Qt.AlignBottom)
+        self.grid.addWidget(self.launchButton, 3, 1, Qt.AlignBottom)
+        self.grid.setColumnStretch(0, 3)
+        self.grid.setColumnStretch(1, 1)
+        
     def createMenu(self):
         self.openAction = OpenAction(self, self.addWads)
         self.exitAction = ExitAction(self)
