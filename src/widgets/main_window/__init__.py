@@ -6,7 +6,8 @@ from PyQt5.QtWidgets import *
 from src import const
 from .actions.open_action import OpenAction
 from .actions.exit_action import ExitAction
-from src.widgets.wad_list import WadList
+from src.widgets.iwad_list import IWadList
+from src.widgets.pwad_list import PWadList
 from src.widgets.path_input import PathInput
 from src.widgets.launch_button import LaunchButton
 
@@ -32,19 +33,19 @@ class MainWindow(QMainWindow):
         self.show()
 
     def addWidgets(self):
-        self.wadListLabel = QLabel("Wad List:")
-        self.wadList = WadList()
-        self.verticalSpacer = QSpacerItem(
-            20, 40, QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pathInputLabel = QLabel("GZDoom Path:")
         self.pathInputLabel.setMaximumHeight(20)
         self.pathInput = PathInput()
         self.pathInput.installEventFilter(self)
+        self.iwadListLabel = QLabel("IWAD:")
+        self.iwadList = IWadList()
+        self.pwadListLabel = QLabel("PWAD List:")
+        self.pwadList = PWadList()
         self.lostSoulLabel = QLabel()
         self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
         self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
         self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
-        self.launchButton = LaunchButton(self.pathInput, self.wadList)
+        self.launchButton = LaunchButton(self.pathInput, self.iwadList)
 
         self.installGrid()
 
@@ -62,13 +63,18 @@ class MainWindow(QMainWindow):
     def installGrid(self):
         self.grid.addWidget(self.pathInputLabel, 0, 0)
         self.grid.addWidget(self.pathInput, 1, 0)
-        self.grid.addWidget(self.wadListLabel, 2, 0)
-        self.grid.addWidget(self.wadList, 3, 0)
+        self.grid.addWidget(self.iwadListLabel, 2, 0)
+        self.grid.addWidget(self.iwadList, 3, 0)
+        self.grid.addWidget(self.pwadListLabel, 4, 0)
+        self.grid.addWidget(self.pwadList, 5, 0)
         self.grid.addWidget(self.lostSoulLabel, 0, 1, 4, 1, Qt.AlignTop)
-        self.grid.addWidget(self.launchButton, 2, 1, Qt.AlignBottom)
-        self.grid.addWidget(self.launchButton, 3, 1, Qt.AlignBottom)
-        self.grid.setColumnStretch(0, 3)
-        self.grid.setColumnStretch(1, 1)
+        self.grid.addWidget(self.launchButton, 5, 1, Qt.AlignBottom)
+        self.grid.setRowStretch(0, 1)
+        self.grid.setRowStretch(1, 1)
+        self.grid.setRowStretch(2, 1)
+        self.grid.setRowStretch(3, 1)
+        self.grid.setRowStretch(4, 1)
+        self.grid.setRowStretch(5, 6)
 
     def eventFilter(self, source, event):
         if (event.type() == QEvent.KeyPress and
@@ -79,13 +85,13 @@ class MainWindow(QMainWindow):
     def addWads(self, wads):
         existent = False
         for wad in wads:
-            foundItems = self.wadList.findItems(wad, Qt.MatchExactly)
+            foundItems = self.iwadList.findItems(wad, Qt.MatchExactly)
             if len(foundItems) > 0:
                 existent = True
                 self.error_dialog.showMessage(
                     f"The wad {wad} has already been added to the wad list.")
         if not existent:
-            self.wadList.addItems(wads)
+            self.iwadList.addItems(wads)
 
     def center(self):
         qr = self.frameGeometry()

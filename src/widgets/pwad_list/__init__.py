@@ -2,7 +2,7 @@ from PyQt5.Qt import Qt
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem
 
 
-class WadList(QListWidget):
+class PWadList(QListWidget):
 
     def __init__(self):
         super().__init__()
@@ -22,7 +22,7 @@ class WadList(QListWidget):
                     self.setCurrentRow(len(self)-1)
                 else:
                     self.setCurrentRow(current_row-1)
-    
+
     def getItems(self):
         items = []
         for n in range(len(self)):
