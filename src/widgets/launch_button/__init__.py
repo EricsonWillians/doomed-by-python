@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QPushButton
-import os, stat
+import os
+import stat
 import subprocess
+
 
 class LaunchButton(QPushButton):
 
@@ -13,5 +15,7 @@ class LaunchButton(QPushButton):
     def onClick(self):
         wads = [wad.text() for wad in self.wadList.getItems()]
         iwadArgument = f'-iwad {" ".join(wads)}'
-        # subprocess.call([self.portPathInput.text(), iwadArgument])
-        os.system(f'"{self.portPathInput.text()}" {iwadArgument}')
+        print(iwadArgument)
+        subprocess.call(
+            f'{self.portPathInput.text()} {iwadArgument}', shell=True)
+        # os.system(f'"{self.portPathInput.text()}" {iwadArgument}')
