@@ -7,6 +7,7 @@ from .actions.open_action import OpenAction
 from .actions.exit_action import ExitAction
 from src.widgets.wad_list import WadList
 from src.widgets.path_input import PathInput
+from src.widgets.launch_button import LaunchButton
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -39,7 +40,7 @@ class MainWindow(QMainWindow):
         self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
         self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
         self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
-        self.launchButton = QPushButton("Launch")
+        self.launchButton = LaunchButton(self.pathInput, self.wadList)
         self.grid.addWidget(self.pathInputLabel, 0, 0)
         self.grid.addWidget(self.pathInput, 1, 0)
         self.grid.addWidget(self.wadListLabel, 2, 0)

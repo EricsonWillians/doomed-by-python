@@ -22,3 +22,9 @@ class WadList(QListWidget):
                     self.setCurrentRow(len(self)-1)
                 else:
                     self.setCurrentRow(current_row-1)
+    
+    def getItems(self):
+        items = []
+        for n in range(len(self)):
+            items.append(self.item(n))
+        return items
