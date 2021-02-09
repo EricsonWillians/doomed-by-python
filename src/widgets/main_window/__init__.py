@@ -4,9 +4,10 @@ from PyQt5.QtCore import QEvent
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 from src import const
-from .actions.open_action import OpenAction
+from .actions.open_iwad_action import OpenIWadAction
+from .actions.open_pwad_action import OpenPWadAction
 from .actions.exit_action import ExitAction
-from src.widgets.iwad_list import IWadList
+from src.widgets.iwad_input import IWadInput
 from src.widgets.pwad_list import PWadList
 from src.widgets.path_input import PathInput
 from src.widgets.launch_button import LaunchButton
@@ -34,28 +35,29 @@ class MainWindow(QMainWindow):
 
     def addWidgets(self):
         self.pathInputLabel = QLabel("GZDoom Path:")
-        self.pathInputLabel.setMaximumHeight(20)
         self.pathInput = PathInput()
         self.pathInput.installEventFilter(self)
-        self.iwadListLabel = QLabel("IWAD:")
-        self.iwadList = IWadList()
+        self.iwadInputLabel = QLabel("IWAD Path:")
+        self.iwadInput = IWadInput()
         self.pwadListLabel = QLabel("PWAD List:")
         self.pwadList = PWadList()
         self.lostSoulLabel = QLabel()
         self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
         self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
         self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
-        self.launchButton = LaunchButton(self.pathInput, self.iwadList)
+        self.launchButton = LaunchButton(self.pathInput, self.iwadInput)
 
         self.installGrid()
 
     def createMenu(self):
-        self.openAction = OpenAction(self, self.addWads)
+        self.openIWadAction = OpenIWadAction(self, self.setIWad)
+        self.openPWadAction = OpenPWadAction(self, self.addPWads)
         self.exitAction = ExitAction(self)
 
         menuBar = self.menuBar()
         fileMenu = menuBar.addMenu('&File')
-        fileMenu.addAction(self.openAction)
+        fileMenu.addAction(self.openIWadAction)
+        fileMenu.addAction(self.openPWadAction)
         fileMenu.addAction(self.exitAction)
 
         helpMenu = menuBar.addMenu('&Help')
@@ -63,8 +65,8 @@ class MainWindow(QMainWindow):
     def installGrid(self):
         self.grid.addWidget(self.pathInputLabel, 0, 0)
         self.grid.addWidget(self.pathInput, 1, 0)
-        self.grid.addWidget(self.iwadListLabel, 2, 0)
-        self.grid.addWidget(self.iwadList, 3, 0)
+        self.grid.addWidget(self.iwadInputLabel, 2, 0)
+        self.grid.addWidget(self.iwadInput, 3, 0)
         self.grid.addWidget(self.pwadListLabel, 4, 0)
         self.grid.addWidget(self.pwadList, 5, 0)
         self.grid.addWidget(self.lostSoulLabel, 0, 1, 4, 1, Qt.AlignTop)
@@ -73,8 +75,7 @@ class MainWindow(QMainWindow):
         self.grid.setRowStretch(1, 1)
         self.grid.setRowStretch(2, 1)
         self.grid.setRowStretch(3, 1)
-        self.grid.setRowStretch(4, 1)
-        self.grid.setRowStretch(5, 6)
+        self.grid.setRowStretch(5, 8)
 
     def eventFilter(self, source, event):
         if (event.type() == QEvent.KeyPress and
@@ -82,16 +83,19 @@ class MainWindow(QMainWindow):
             self.launchButton.onClick()
         return super(MainWindow, self).eventFilter(source, event)
 
-    def addWads(self, wads):
+    def setIWad(self, wad):
+        self.iwadInput.setText(wad)
+
+    def addPWads(self, wads):
         existent = False
         for wad in wads:
-            foundItems = self.iwadList.findItems(wad, Qt.MatchExactly)
+            foundItems = self.pwadList.findItems(wad, Qt.MatchExactly)
             if len(foundItems) > 0:
                 existent = True
                 self.error_dialog.showMessage(
                     f"The wad {wad} has already been added to the wad list.")
         if not existent:
-            self.iwadList.addItems(wads)
+            self.pwadList.addItems(wads)
 
     def center(self):
         qr = self.frameGeometry()
