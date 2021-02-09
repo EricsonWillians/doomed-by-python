@@ -35,17 +35,25 @@ class MainWindow(QMainWindow):
 
     def addWidgets(self):
         self.pathInputLabel = QLabel("GZDoom Path:")
+        self.pathInputLabel.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.pathInput = PathInput()
+
         self.pathInput.installEventFilter(self)
         self.iwadInputLabel = QLabel("IWAD Path:")
+        self.iwadInputLabel.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.iwadInput = IWadInput()
         self.pwadListLabel = QLabel("PWAD List:")
         self.pwadList = PWadList()
+        self.pwadList.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.lostSoulLabel = QLabel()
         self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
         self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
         self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
-        self.launchButton = LaunchButton(self.pathInput, self.iwadInput)
+        self.launchButton = LaunchButton(
+            self.pathInput, self.iwadInput, self.pwadList)
 
         self.installGrid()
 
@@ -71,11 +79,6 @@ class MainWindow(QMainWindow):
         self.grid.addWidget(self.pwadList, 5, 0)
         self.grid.addWidget(self.lostSoulLabel, 0, 1, 4, 1, Qt.AlignTop)
         self.grid.addWidget(self.launchButton, 5, 1, Qt.AlignBottom)
-        self.grid.setRowStretch(0, 1)
-        self.grid.setRowStretch(1, 1)
-        self.grid.setRowStretch(2, 1)
-        self.grid.setRowStretch(3, 1)
-        self.grid.setRowStretch(5, 8)
 
     def eventFilter(self, source, event):
         if (event.type() == QEvent.KeyPress and
