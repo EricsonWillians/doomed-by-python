@@ -1,4 +1,5 @@
 import sys
+import json
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QEvent
 from PyQt5.QtGui import QPixmap
@@ -11,11 +12,13 @@ from src.widgets.iwad_input import IWadInput
 from src.widgets.pwad_list import PWadList
 from src.widgets.path_input import PathInput
 from src.widgets.launch_button import LaunchButton
+from pathlib import Path, PurePath
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.config = self.getConfig()
         self.initUi()
 
     def initUi(self):
@@ -58,8 +61,10 @@ class MainWindow(QMainWindow):
         self.installGrid()
 
     def createMenu(self):
-        self.openIWadAction = OpenIWadAction(self, self.setIWad)
-        self.openPWadAction = OpenPWadAction(self, self.addPWads)
+        self.openIWadAction = OpenIWadAction(
+            self, self.setIWad, self.config, self.saveConfig)
+        self.openPWadAction = OpenPWadAction(
+            self, self.addPWads, self.config, self.saveConfig)
         self.exitAction = ExitAction(self)
 
         menuBar = self.menuBar()
@@ -105,3 +110,30 @@ class MainWindow(QMainWindow):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    def saveConfig(self, filename: str, isWad: bool):
+        iwadDir = self.config.get("iwadDir")
+        pwadDir = self.config.get("pwadDir")
+        if isWad:
+            iwadDir = str(PurePath(filename).parent)
+        else:
+            if filename:
+                pwadDir = str(PurePath(filename[0]).parent)
+        with open('config.json', 'w') as fp:
+            json.dump({
+                "iwadDir": iwadDir,
+                "pwadDir": pwadDir
+            }, fp)
+
+    def getConfig(self):
+        configData = {}
+        if Path("config.json").exists():
+            with open('config.json', 'r') as fp:
+                configData = json.load(fp)
+        else:
+            home = str(Path.home())
+            configData = {
+                "iwadDir": home,
+                "pwadDir": home
+            }
+        return configData

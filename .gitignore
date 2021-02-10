@@ -5,6 +5,7 @@ __pycache__/
 
 *.WAD
 *.wad
+config.json
 
 # C extensions
 *.so
