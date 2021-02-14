@@ -5,6 +5,7 @@ from PyQt5.QtCore import QEvent
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 from src import const
+from .actions.open_source_port_action import OpenSourcePortAction
 from .actions.open_iwad_action import OpenIWadAction
 from .actions.open_pwad_action import OpenPWadAction
 from .actions.exit_action import ExitAction
@@ -37,12 +38,12 @@ class MainWindow(QMainWindow):
         self.show()
 
     def addWidgets(self):
-        self.pathInputLabel = QLabel("GZDoom Path:")
-        self.pathInputLabel.setSizePolicy(
+        self.sourcePortPathInputLabel = QLabel("Source Port Path:")
+        self.sourcePortPathInputLabel.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.pathInput = PathInput()
+        self.sourcePortPathInput = PathInput()
 
-        self.pathInput.installEventFilter(self)
+        self.sourcePortPathInput.installEventFilter(self)
         self.iwadInputLabel = QLabel("IWAD Path:")
         self.iwadInputLabel.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -56,19 +57,22 @@ class MainWindow(QMainWindow):
         self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
         self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
         self.launchButton = LaunchButton(
-            self.pathInput, self.iwadInput, self.pwadList)
+            self.sourcePortPathInput, self.iwadInput, self.pwadList)
 
         self.installGrid()
 
     def createMenu(self):
+        self.openSourcePortAction = OpenSourcePortAction(
+            self, self.setSourcePort, self.config, self.saveSourcePortPath)
         self.openIWadAction = OpenIWadAction(
-            self, self.setIWad, self.config, self.saveConfig)
+            self, self.setIWad, self.config, self.saveWadPath)
         self.openPWadAction = OpenPWadAction(
-            self, self.addPWads, self.config, self.saveConfig)
+            self, self.addPWads, self.config, self.saveWadPath)
         self.exitAction = ExitAction(self)
 
         menuBar = self.menuBar()
         fileMenu = menuBar.addMenu('&File')
+        fileMenu.addAction(self.openSourcePortAction)
         fileMenu.addAction(self.openIWadAction)
         fileMenu.addAction(self.openPWadAction)
         fileMenu.addAction(self.exitAction)
@@ -76,8 +80,8 @@ class MainWindow(QMainWindow):
         helpMenu = menuBar.addMenu('&Help')
 
     def installGrid(self):
-        self.grid.addWidget(self.pathInputLabel, 0, 0)
-        self.grid.addWidget(self.pathInput, 1, 0)
+        self.grid.addWidget(self.sourcePortPathInputLabel, 0, 0)
+        self.grid.addWidget(self.sourcePortPathInput, 1, 0)
         self.grid.addWidget(self.iwadInputLabel, 2, 0)
         self.grid.addWidget(self.iwadInput, 3, 0)
         self.grid.addWidget(self.pwadListLabel, 4, 0)
@@ -87,14 +91,17 @@ class MainWindow(QMainWindow):
 
     def eventFilter(self, source, event):
         if (event.type() == QEvent.KeyPress and
-                source is self.pathInput and event.key() == Qt.Key_Return):
+                source is self.sourcePortPathInput and event.key() == Qt.Key_Return):
             self.launchButton.onClick()
         return super(MainWindow, self).eventFilter(source, event)
 
-    def setIWad(self, wad):
+    def setSourcePort(self, sourcePort: str):
+        self.sourcePortPathInput.setText(sourcePort)
+
+    def setIWad(self, wad: str):
         self.iwadInput.setText(wad)
 
-    def addPWads(self, wads):
+    def addPWads(self, wads: list):
         existent = False
         for wad in wads:
             foundItems = self.pwadList.findItems(wad, Qt.MatchExactly)
@@ -111,16 +118,27 @@ class MainWindow(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def saveConfig(self, filename: str, isWad: bool):
+    def saveWadPath(self, filename: str, isIWad: bool):
         iwadDir = self.config.get("iwadDir")
         pwadDir = self.config.get("pwadDir")
-        if isWad:
+        if isIWad:
             iwadDir = str(PurePath(filename).parent)
         else:
             if filename:
                 pwadDir = str(PurePath(filename[0]).parent)
         with open('config.json', 'w') as fp:
             json.dump({
+                "iwadDir": iwadDir,
+                "pwadDir": pwadDir
+            }, fp)
+
+    def saveSourcePortPath(self, filename: str):
+        iwadDir = self.config.get("iwadDir")
+        pwadDir = self.config.get("pwadDir")
+        sourcePortDir = str(PurePath(filename).parent)
+        with open('config.json', 'w') as fp:
+            json.dump({
+                "sourcePortDir": sourcePortDir,
                 "iwadDir": iwadDir,
                 "pwadDir": pwadDir
             }, fp)
@@ -133,7 +151,8 @@ class MainWindow(QMainWindow):
         else:
             home = str(Path.home())
             configData = {
+                "sourcePortDir": home,
                 "iwadDir": home,
-                "pwadDir": home
+                "pwadDir": home,
             }
         return configData
