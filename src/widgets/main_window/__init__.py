@@ -8,11 +8,13 @@ from src import const
 from .actions.open_source_port_action import OpenSourcePortAction
 from .actions.open_iwad_action import OpenIWadAction
 from .actions.open_pwad_action import OpenPWadAction
+from .actions.open_wad_finder import OpenWadFinder
 from .actions.exit_action import ExitAction
 from src.widgets.iwad_input import IWadInput
 from src.widgets.pwad_list import PWadList
 from src.widgets.path_input import PathInput
 from src.widgets.launch_button import LaunchButton
+from src.widgets.wad_finder import WadFinder
 from pathlib import Path, PurePath
 
 
@@ -30,7 +32,9 @@ class MainWindow(QMainWindow):
         self.grid = QGridLayout()
         self.centralWidget.setLayout(self.grid)
         self.setCentralWidget(self.centralWidget)
-        self.error_dialog = QErrorMessage()
+        self.errorDialog = QErrorMessage()
+
+        self.wadFinder = WadFinder()
 
         self.createMenu()
         self.addWidgets()
@@ -68,6 +72,7 @@ class MainWindow(QMainWindow):
             self, self.setIWad, self.config, self.saveWadPath)
         self.openPWadAction = OpenPWadAction(
             self, self.addPWads, self.config, self.saveWadPath)
+        self.openWadFinder = OpenWadFinder(self, self.wadFinder)
         self.exitAction = ExitAction(self)
 
         menuBar = self.menuBar()
@@ -77,6 +82,8 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(self.openPWadAction)
         fileMenu.addAction(self.exitAction)
 
+        viewMenu = menuBar.addMenu('&View')
+        viewMenu.addAction(self.openWadFinder)
         helpMenu = menuBar.addMenu('&Help')
 
     def installGrid(self):
@@ -107,7 +114,7 @@ class MainWindow(QMainWindow):
             foundItems = self.pwadList.findItems(wad, Qt.MatchExactly)
             if len(foundItems) > 0:
                 existent = True
-                self.error_dialog.showMessage(
+                self.errorDialog.showMessage(
                     f"The wad {wad} has already been added to the wad list.")
         if not existent:
             self.pwadList.addItems(wads)
