@@ -8,12 +8,12 @@ class WadFinder(QWidget):
     def __init__(self):
         super().__init__()
         self.initUi()
-        r = requests.get(
-            'https://www.doomworld.com/idgames/levels/doom2/deathmatch/a-c/')
-        soup = BeautifulSoup(r.text, 'html.parser')
-        wadListings = soup.findAll("table", {"class": "wadlisting"})
+        # r = requests.get(
+        #     'https://www.doomworld.com/idgames/levels/doom2/deathmatch/a-c/')
+        # soup = BeautifulSoup(r.text, 'html.parser')
+        # wadListings = soup.findAll("table", {"class": "wadlisting"})
 
-        print(wadListings)
+        # print(wadListings)
 
     def initUi(self):
         self.resize(const.SCREEN_WIDTH, const.SCREEN_HEIGHT)
