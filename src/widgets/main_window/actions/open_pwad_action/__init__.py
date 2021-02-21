@@ -17,7 +17,7 @@ class OpenPWadAction(QAction):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         filenames, _ = QFileDialog.getOpenFileNames(
-            self.widget, "Select PWAD files", self.config.get("pwadDir"), "WAD files (*.    wad, *.pk3)", options=options)
+            self.widget, "Select PWAD files", self.config.get("pwadDir"), "WAD files (*.wad *.pk3)", options=options)
         if filenames:
             self.saveWadPath(filenames, isIWad=False)
             self.addPWads(filenames)
