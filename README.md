@@ -1,5 +1,16 @@
-# doomed-by-python
+# Doomed by Python
 
-An open-source GUI for launching gzdoom-compatible wad files and (maybe) a wrapper for deutex.
+Doomed by Python is a simple yet useful mod launcher for GZDoom / Zandronum players, especially interesting for linux users.
 
-### Under severe development... I'll write a readme once I release a first version.
+## Features
+
+- IWAD chooser.
+- Multiple PWAD selection.
+- Previously selected launch options are saved on a JSON file for fast launching.
+
+## Future features
+
+- Full support for GZDoom command-line parameters.
+- Maybe a Deutex wrapper, since I gave up the wad finder idea.
+- Windows support.
+- Who knows?
