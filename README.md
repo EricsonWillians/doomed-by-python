@@ -1,5 +1,7 @@
 # Doomed by Python
 
+![screenshot](./screenshot.png)
+
 Doomed by Python is a simple yet useful mod launcher for GZDoom / Zandronum players, especially interesting for linux users.
 
 ## Features
