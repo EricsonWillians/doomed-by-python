@@ -8,13 +8,12 @@ from src import const
 from .actions.open_source_port_action import OpenSourcePortAction
 from .actions.open_iwad_action import OpenIWadAction
 from .actions.open_pwad_action import OpenPWadAction
-from .actions.open_wad_finder import OpenWadFinder
+from .actions.open_wad_repository import OpenWadRepository
 from .actions.exit_action import ExitAction
 from src.widgets.iwad_input import IWadInput
 from src.widgets.pwad_list import PWadList
 from src.widgets.path_input import PathInput
 from src.widgets.launch_button import LaunchButton
-from src.widgets.wad_finder import WadFinder
 from pathlib import Path, PurePath
 
 
@@ -33,8 +32,6 @@ class MainWindow(QMainWindow):
         self.centralWidget.setLayout(self.grid)
         self.setCentralWidget(self.centralWidget)
         self.errorDialog = QErrorMessage()
-
-        self.wadFinder = WadFinder()
 
         self.createMenu()
         self.addWidgets()
@@ -72,7 +69,8 @@ class MainWindow(QMainWindow):
             self, self.setIWad, self.config, self.saveWadPath)
         self.openPWadAction = OpenPWadAction(
             self, self.addPWads, self.config, self.saveWadPath)
-        self.openWadFinder = OpenWadFinder(self, self.wadFinder)
+        self.openWadRepository = OpenWadRepository(self)
+
         self.exitAction = ExitAction(self)
 
         menuBar = self.menuBar()
@@ -81,10 +79,8 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(self.openIWadAction)
         fileMenu.addAction(self.openPWadAction)
         fileMenu.addAction(self.exitAction)
-
-        viewMenu = menuBar.addMenu('&View')
-        viewMenu.addAction(self.openWadFinder)
         helpMenu = menuBar.addMenu('&Help')
+        helpMenu.addAction(self.openWadRepository)
 
     def installGrid(self):
         self.grid.addWidget(self.sourcePortPathInputLabel, 0, 0)
