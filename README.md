@@ -1,18 +1,18 @@
-# Doomed by Python
+# Doomed by Python: Advanced GZDoom/Zandronum Mod Launcher
 
 ![screenshot](./screenshot.png)
 
-Doomed by Python is a simple yet useful mod launcher for GZDoom / Zandronum players, especially interesting for linux users.
+Doomed by Python is a sophisticated and efficient mod launcher designed for GZDoom and Zandronum players, with a particular emphasis on enhancing the experience for Linux users.
 
-## Features
+## Key Features
 
-- IWAD chooser.
-- Multiple PWAD selection.
-- Previously selected launch options are saved on a JSON file for fast launching.
+- **IWAD Chooser:** Seamlessly select the desired IWAD for your gaming session.
+- **Multiple PWAD Selection:** Effortlessly add multiple PWADs to your game, expanding your gameplay options.
+- **Launch Options Persistence:** Save your previously selected launch options in a JSON file for quick and easy future access.
 
-## Future features
+## Planned Enhancements
 
-- Full support for GZDoom command-line parameters.
-- Maybe a Deutex wrapper, since I gave up the wad finder idea.
-- Windows support.
-- Who knows?
+- **GZDoom Command-Line Parameters:** Full integration with GZDoom's command-line parameters, enabling advanced customization and control.
+- **Deutex Wrapper Integration:** Considering the addition of a Deutex wrapper in lieu of the original WAD finder concept.
+- **Windows Support:** Expand platform compatibility by adding support for Windows operating systems.
+- **Additional Features:** Exploration of other potential improvements and additions based on user feedback and requirements.
