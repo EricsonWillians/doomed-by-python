@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem,
     QAbstractItemView,
 )
+from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QAbstractItemView
 
 
 def _file_size(path: str) -> str:
@@ -51,32 +52,12 @@ class PWadList(QTreeWidget):
                 self.takeTopLevelItem(idx)
                 self.insertTopLevelItem(idx + 1, item)
                 self.setCurrentItem(item)
+        self.setDragDropMode(QAbstractItemView.InternalMove)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Delete:
             for item in self.selectedItems():
                 index = self.indexOfTopLevelItem(item)
                 self.takeTopLevelItem(index)
-        else:
-            super().keyPressEvent(event)
-
-    def getItems(self):
-        items = []
-        for n in range(self.topLevelItemCount()):
-            items.append(self.topLevelItem(n))
-        return items
-
-    def addWad(self, path: str):
-        """Add a wad entry with size information if not already present."""
-        paths = [i.data(0, Qt.UserRole) for i in self.getItems()]
-        if path in paths:
-            return False
-        item = QTreeWidgetItem([
-            os.path.basename(path),
-            _file_size(path),
-            os.path.dirname(path),
-        ])
-        item.setToolTip(0, path)
-        item.setData(0, Qt.UserRole, path)
-        self.addTopLevelItem(item)
-        return True
+                self.takeItem(self.row(item))

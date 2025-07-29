@@ -14,11 +14,6 @@ class LaunchButton(QPushButton):
         optionsInput,
         logWindow,
     ):
-        super().__init__("Launch")
-        self.portPathInput = portPathInput
-        self.iwadInput = iwadInput
-        self.pwadList = pwadList
-        self.optionsInput = optionsInput
         self.logWindow = logWindow
         self.process = QProcess()
         self.process.readyReadStandardOutput.connect(self._readOutput)
