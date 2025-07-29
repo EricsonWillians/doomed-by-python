@@ -36,6 +36,12 @@ class MainWindow(QMainWindow):
         self.createMenu()
         self.addWidgets()
 
+        # Load Norton Commander inspired theme
+        theme_file = Path('assets/nc_theme.qss')
+        if theme_file.exists():
+            with open(theme_file, 'r') as fh:
+                self.setStyleSheet(fh.read())
+
         self.show()
 
     def addWidgets(self):
@@ -49,16 +55,40 @@ class MainWindow(QMainWindow):
         self.iwadInputLabel.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.iwadInput = IWadInput()
+        self.iwadBrowseButton = QPushButton('Browse...')
+        self.iwadBrowseButton.clicked.connect(self.openIWadAction._open)
+        self.iwadInputContainer = QWidget()
+        iwadLayout = QHBoxLayout()
+        iwadLayout.setContentsMargins(0, 0, 0, 0)
+        iwadLayout.addWidget(self.iwadInput)
+        iwadLayout.addWidget(self.iwadBrowseButton)
+        self.iwadInputContainer.setLayout(iwadLayout)
         self.pwadListLabel = QLabel("PWAD List:")
         self.pwadList = PWadList()
         self.pwadList.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Maximum)
+        self.pwadAddButton = QPushButton('Add...')
+        self.pwadAddButton.clicked.connect(self.openPWadAction._open)
+        self.pwadRemoveButton = QPushButton('Remove')
+        self.pwadRemoveButton.clicked.connect(self.removeSelectedPWads)
+        self.pwadButtons = QWidget()
+        pwadBtnsLayout = QHBoxLayout()
+        pwadBtnsLayout.setContentsMargins(0, 0, 0, 0)
+        pwadBtnsLayout.addWidget(self.pwadAddButton)
+        pwadBtnsLayout.addWidget(self.pwadRemoveButton)
+        self.pwadButtons.setLayout(pwadBtnsLayout)
+        self.extraOptionsLabel = QLabel("Extra Options:")
+        self.extraOptionsInput = QLineEdit()
         self.lostSoulLabel = QLabel()
         self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
         self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
         self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
         self.launchButton = LaunchButton(
-            self.sourcePortPathInput, self.iwadInput, self.pwadList)
+            self.sourcePortPathInput,
+            self.iwadInput,
+            self.pwadList,
+            self.extraOptionsInput,
+        )
 
         self.installGrid()
 
@@ -86,15 +116,21 @@ class MainWindow(QMainWindow):
         self.grid.addWidget(self.sourcePortPathInputLabel, 0, 0)
         self.grid.addWidget(self.sourcePortPathInput, 1, 0)
         self.grid.addWidget(self.iwadInputLabel, 2, 0)
-        self.grid.addWidget(self.iwadInput, 3, 0)
+        self.grid.addWidget(self.iwadInputContainer, 3, 0)
         self.grid.addWidget(self.pwadListLabel, 4, 0)
         self.grid.addWidget(self.pwadList, 5, 0)
+        self.grid.addWidget(self.pwadButtons, 6, 0)
+        self.grid.addWidget(self.extraOptionsLabel, 7, 0)
+        self.grid.addWidget(self.extraOptionsInput, 8, 0)
         self.grid.addWidget(self.lostSoulLabel, 0, 1, 4, 1, Qt.AlignTop)
-        self.grid.addWidget(self.launchButton, 5, 1, Qt.AlignBottom)
+        self.grid.addWidget(self.launchButton, 8, 1, Qt.AlignBottom)
 
     def eventFilter(self, source, event):
-        if (event.type() == QEvent.KeyPress and
-                source is self.sourcePortPathInput and event.key() == Qt.Key_Return):
+        if (
+            event.type() == QEvent.KeyPress and
+            source is self.sourcePortPathInput and
+            event.key() == Qt.Key_Return
+        ):
             self.launchButton.onClick()
         return super(MainWindow, self).eventFilter(source, event)
 
@@ -114,6 +150,10 @@ class MainWindow(QMainWindow):
                     f"The wad {wad} has already been added to the wad list.")
         if not existent:
             self.pwadList.addItems(wads)
+
+    def removeSelectedPWads(self):
+        for item in self.pwadList.selectedItems():
+            self.pwadList.takeItem(self.pwadList.row(item))
 
     def center(self):
         qr = self.frameGeometry()
