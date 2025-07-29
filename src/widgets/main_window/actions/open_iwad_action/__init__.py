@@ -19,7 +19,12 @@ class OpenIWadAction(QAction):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(
-            self.widget, "Select an IWAD file", self.config.get("iwadDir"), "WAD files (*.wad)", options=options)
+            self.widget,
+            "Select an IWAD file",
+            self.config.get("iwadDir"),
+            "WAD files (*.wad)",
+            options=options,
+        )
         if fileName:
             self.saveWadPath(fileName, isIWad=True)
             self.setIWad(fileName)
