@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QAction, qApp
 
+
 class ExitAction(QAction):
 
     def __init__(self, widget):
