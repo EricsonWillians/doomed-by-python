@@ -36,6 +36,12 @@ class MainWindow(QMainWindow):
         self.createMenu()
         self.addWidgets()
 
+        # Load Norton Commander inspired theme
+        theme_file = Path('assets/nc_theme.qss')
+        if theme_file.exists():
+            with open(theme_file, 'r') as fh:
+                self.setStyleSheet(fh.read())
+
         self.show()
 
     def addWidgets(self):
@@ -53,12 +59,18 @@ class MainWindow(QMainWindow):
         self.pwadList = PWadList()
         self.pwadList.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Maximum)
+        self.extraOptionsLabel = QLabel("Extra Options:")
+        self.extraOptionsInput = QLineEdit()
         self.lostSoulLabel = QLabel()
         self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
         self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
         self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
         self.launchButton = LaunchButton(
-            self.sourcePortPathInput, self.iwadInput, self.pwadList)
+            self.sourcePortPathInput,
+            self.iwadInput,
+            self.pwadList,
+            self.extraOptionsInput,
+        )
 
         self.installGrid()
 
@@ -89,12 +101,17 @@ class MainWindow(QMainWindow):
         self.grid.addWidget(self.iwadInput, 3, 0)
         self.grid.addWidget(self.pwadListLabel, 4, 0)
         self.grid.addWidget(self.pwadList, 5, 0)
+        self.grid.addWidget(self.extraOptionsLabel, 6, 0)
+        self.grid.addWidget(self.extraOptionsInput, 7, 0)
         self.grid.addWidget(self.lostSoulLabel, 0, 1, 4, 1, Qt.AlignTop)
-        self.grid.addWidget(self.launchButton, 5, 1, Qt.AlignBottom)
+        self.grid.addWidget(self.launchButton, 7, 1, Qt.AlignBottom)
 
     def eventFilter(self, source, event):
-        if (event.type() == QEvent.KeyPress and
-                source is self.sourcePortPathInput and event.key() == Qt.Key_Return):
+        if (
+            event.type() == QEvent.KeyPress and
+            source is self.sourcePortPathInput and
+            event.key() == Qt.Key_Return
+        ):
             self.launchButton.onClick()
         return super(MainWindow, self).eventFilter(source, event)
 

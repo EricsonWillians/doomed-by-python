@@ -1,0 +1,27 @@
+QWidget {
+    background-color: #000080;
+    color: #FFFF00;
+    font-family: "Courier New", monospace;
+}
+
+QLineEdit, QListWidget {
+    background-color: #000040;
+    color: #FFFF00;
+    border: 1px solid #FFFF00;
+}
+
+QPushButton {
+    background-color: #000040;
+    color: #FFFF00;
+    border: 1px solid #FFFF00;
+    padding: 4px;
+}
+
+QMenuBar, QMenu {
+    background-color: #000080;
+    color: #FFFF00;
+}
+
+QMenu::item:selected {
+    background-color: #0000A0;
+}
