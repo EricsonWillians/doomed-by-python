@@ -14,6 +14,8 @@ from src.widgets.iwad_input import IWadInput
 from src.widgets.pwad_list import PWadList
 from src.widgets.path_input import PathInput
 from src.widgets.launch_button import LaunchButton
+from src.widgets.log_window import LogWindow
+from src.widgets.pwad_info import PWadInfo
 from pathlib import Path, PurePath
 
 
@@ -49,153 +51,63 @@ class MainWindow(QMainWindow):
         self.sourcePortPathInputLabel.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.sourcePortPathInput = PathInput()
+        self.sourcePortPathInput.setToolTip('Path to gzdoom or zandronum')
+        self.sourcePortPathInput.setText(
+            self.config.get('lastSourcePort', 'gzdoom')
+        )
 
         self.sourcePortPathInput.installEventFilter(self)
         self.iwadInputLabel = QLabel("IWAD Path:")
         self.iwadInputLabel.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.iwadInput = IWadInput()
+        self.iwadInput.setToolTip('Main IWAD file')
+        self.iwadInput.setText(self.config.get('lastIWad', ''))
         self.iwadBrowseButton = QPushButton('Browse...')
-        self.iwadBrowseButton.clicked.connect(self.openIWadAction._open)
-        self.iwadInputContainer = QWidget()
-        iwadLayout = QHBoxLayout()
-        iwadLayout.setContentsMargins(0, 0, 0, 0)
-        iwadLayout.addWidget(self.iwadInput)
-        iwadLayout.addWidget(self.iwadBrowseButton)
-        self.iwadInputContainer.setLayout(iwadLayout)
-        self.pwadListLabel = QLabel("PWAD List:")
-        self.pwadList = PWadList()
-        self.pwadList.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Maximum)
+        self.iwadBrowseButton.setToolTip('Select an IWAD file')
+        self.iwadBrowseButton = QPushButton('Browse...')
+
+        for wad in self.config.get('lastPWads', []):
+            self.pwadList.addWad(wad)
+        self.pwadAddButton = QPushButton('Add...')
+        self.pwadAddButton.setToolTip('Add PWAD or PK3 files')
+        self.pwadAddButton.clicked.connect(self.openPWadAction._open)
+        self.pwadRemoveButton = QPushButton('Remove')
+        self.pwadRemoveButton.setToolTip('Remove selected mods')
+        self.pwadRemoveButton.clicked.connect(self.removeSelectedPWads)
+        self.pwadUpButton = QPushButton('Up')
+        self.pwadUpButton.setToolTip('Move selected mods up')
+        self.pwadUpButton.clicked.connect(self.pwadList.moveUp)
+        self.pwadDownButton = QPushButton('Down')
+        self.pwadDownButton.setToolTip('Move selected mods down')
+        self.pwadDownButton.clicked.connect(self.pwadList.moveDown)
         self.pwadAddButton = QPushButton('Add...')
         self.pwadAddButton.clicked.connect(self.openPWadAction._open)
         self.pwadRemoveButton = QPushButton('Remove')
         self.pwadRemoveButton.clicked.connect(self.removeSelectedPWads)
-        self.pwadButtons = QWidget()
-        pwadBtnsLayout = QHBoxLayout()
-        pwadBtnsLayout.setContentsMargins(0, 0, 0, 0)
-        pwadBtnsLayout.addWidget(self.pwadAddButton)
-        pwadBtnsLayout.addWidget(self.pwadRemoveButton)
+
+        pwadBtnsLayout.addWidget(self.pwadUpButton)
+        pwadBtnsLayout.addWidget(self.pwadDownButton)
         self.pwadButtons.setLayout(pwadBtnsLayout)
         self.extraOptionsLabel = QLabel("Extra Options:")
         self.extraOptionsInput = QLineEdit()
+        self.extraOptionsInput.setToolTip('Additional command line arguments')
+        self.extraOptionsInput.setText(self.config.get('lastOptions', ''))
         self.lostSoulLabel = QLabel()
         self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
         self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
         self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
+        self.logWindow = LogWindow(self)
+        self.pwadInfo = PWadInfo()
         self.launchButton = LaunchButton(
             self.sourcePortPathInput,
             self.iwadInput,
             self.pwadList,
             self.extraOptionsInput,
+            self.logWindow,
+        )
+        self.pwadList.itemSelectionChanged.connect(self.updatePWadInfo)
+        self.updatePWadInfo()
         )
 
-        self.installGrid()
-
-    def createMenu(self):
-        self.openSourcePortAction = OpenSourcePortAction(
-            self, self.setSourcePort, self.config, self.saveSourcePortPath)
-        self.openIWadAction = OpenIWadAction(
-            self, self.setIWad, self.config, self.saveWadPath)
-        self.openPWadAction = OpenPWadAction(
-            self, self.addPWads, self.config, self.saveWadPath)
-        self.openWadRepository = OpenWadRepository(self)
-
-        self.exitAction = ExitAction(self)
-
-        menuBar = self.menuBar()
-        fileMenu = menuBar.addMenu('&File')
-        fileMenu.addAction(self.openSourcePortAction)
-        fileMenu.addAction(self.openIWadAction)
-        fileMenu.addAction(self.openPWadAction)
-        fileMenu.addAction(self.exitAction)
-        helpMenu = menuBar.addMenu('&Help')
-        helpMenu.addAction(self.openWadRepository)
-
-    def installGrid(self):
-        self.grid.addWidget(self.sourcePortPathInputLabel, 0, 0)
-        self.grid.addWidget(self.sourcePortPathInput, 1, 0)
-        self.grid.addWidget(self.iwadInputLabel, 2, 0)
-        self.grid.addWidget(self.iwadInputContainer, 3, 0)
-        self.grid.addWidget(self.pwadListLabel, 4, 0)
-        self.grid.addWidget(self.pwadList, 5, 0)
-        self.grid.addWidget(self.pwadButtons, 6, 0)
-        self.grid.addWidget(self.extraOptionsLabel, 7, 0)
-        self.grid.addWidget(self.extraOptionsInput, 8, 0)
-        self.grid.addWidget(self.lostSoulLabel, 0, 1, 4, 1, Qt.AlignTop)
-        self.grid.addWidget(self.launchButton, 8, 1, Qt.AlignBottom)
-
-    def eventFilter(self, source, event):
-        if (
-            event.type() == QEvent.KeyPress and
-            source is self.sourcePortPathInput and
-            event.key() == Qt.Key_Return
-        ):
-            self.launchButton.onClick()
-        return super(MainWindow, self).eventFilter(source, event)
-
-    def setSourcePort(self, sourcePort: str):
-        self.sourcePortPathInput.setText(sourcePort)
-
-    def setIWad(self, wad: str):
-        self.iwadInput.setText(wad)
-
-    def addPWads(self, wads: list):
-        existent = False
-        for wad in wads:
-            foundItems = self.pwadList.findItems(wad, Qt.MatchExactly)
-            if len(foundItems) > 0:
-                existent = True
-                self.errorDialog.showMessage(
-                    f"The wad {wad} has already been added to the wad list.")
-        if not existent:
-            self.pwadList.addItems(wads)
-
-    def removeSelectedPWads(self):
-        for item in self.pwadList.selectedItems():
-            self.pwadList.takeItem(self.pwadList.row(item))
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
-    def saveWadPath(self, filename: str, isIWad: bool):
-        iwadDir = self.config.get("iwadDir")
-        pwadDir = self.config.get("pwadDir")
-        if isIWad:
-            iwadDir = str(PurePath(filename).parent)
-        else:
-            if filename:
-                pwadDir = str(PurePath(filename[0]).parent)
-        with open('config.json', 'w') as fp:
-            json.dump({
-                "iwadDir": iwadDir,
-                "pwadDir": pwadDir
-            }, fp)
-
-    def saveSourcePortPath(self, filename: str):
-        iwadDir = self.config.get("iwadDir")
-        pwadDir = self.config.get("pwadDir")
-        sourcePortDir = str(PurePath(filename).parent)
-        with open('config.json', 'w') as fp:
-            json.dump({
-                "sourcePortDir": sourcePortDir,
-                "iwadDir": iwadDir,
-                "pwadDir": pwadDir
-            }, fp)
-
-    def getConfig(self):
-        configData = {}
-        if Path("config.json").exists():
-            with open('config.json', 'r') as fp:
-                configData = json.load(fp)
-        else:
-            home = str(Path.home())
-            configData = {
-                "sourcePortDir": home,
-                "iwadDir": home,
-                "pwadDir": home,
-            }
-        return configData
+        self.grid.addWidget(self.pwadInfo, 4, 1, 4, 1)
