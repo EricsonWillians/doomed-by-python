@@ -76,48 +76,19 @@ class MainWindow(QMainWindow):
         self.pwadList = PWadList()
         self.pwadList.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Maximum)
-        for wad in self.config.get('lastPWads', []):
-            self.pwadList.addWad(wad)
-        self.pwadAddButton = QPushButton('Add...')
-        self.pwadAddButton.setToolTip('Add PWAD or PK3 files')
-        self.pwadAddButton.clicked.connect(self.openPWadAction._open)
-        self.pwadRemoveButton = QPushButton('Remove')
-        self.pwadRemoveButton.setToolTip('Remove selected mods')
-        self.pwadRemoveButton.clicked.connect(self.removeSelectedPWads)
-        self.pwadUpButton = QPushButton('Up')
-        self.pwadUpButton.setToolTip('Move selected mods up')
-        self.pwadUpButton.clicked.connect(self.pwadList.moveUp)
-        self.pwadDownButton = QPushButton('Down')
-        self.pwadDownButton.setToolTip('Move selected mods down')
-        self.pwadDownButton.clicked.connect(self.pwadList.moveDown)
+        self.iwadBrowseButton = QPushButton('Browse...')
+
+
         self.pwadButtons = QWidget()
         pwadBtnsLayout = QHBoxLayout()
         pwadBtnsLayout.setContentsMargins(0, 0, 0, 0)
         pwadBtnsLayout.addWidget(self.pwadAddButton)
         pwadBtnsLayout.addWidget(self.pwadRemoveButton)
-        pwadBtnsLayout.addWidget(self.pwadUpButton)
-        pwadBtnsLayout.addWidget(self.pwadDownButton)
-        self.pwadButtons.setLayout(pwadBtnsLayout)
-        self.extraOptionsLabel = QLabel("Extra Options:")
-        self.extraOptionsInput = QLineEdit()
-        self.extraOptionsInput.setToolTip('Additional command line arguments')
-        self.extraOptionsInput.setText(self.config.get('lastOptions', ''))
-        self.lostSoulLabel = QLabel()
-        self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
-        self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
-        self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
-        self.logWindow = LogWindow(self)
-        self.pwadInfo = PWadInfo()
-        self.launchButton = LaunchButton(
-            self.sourcePortPathInput,
-            self.iwadInput,
-            self.pwadList,
-            self.extraOptionsInput,
-            self.logWindow,
-        )
-        self.pwadList.itemSelectionChanged.connect(self.updatePWadInfo)
-        self.updatePWadInfo()
-
+        self.pwadAddButton = QPushButton('Add...')
+        self.pwadAddButton.clicked.connect(self.openPWadAction._open)
+        self.pwadRemoveButton = QPushButton('Remove')
+        self.pwadRemoveButton.clicked.connect(self.removeSelectedPWads)
+00
         self.installGrid()
 
     def createMenu(self):
@@ -241,3 +212,6 @@ class MainWindow(QMainWindow):
             for item in self.pwadList.selectedItems()
         ]
         self.pwadInfo.showInfo(paths)
+        )
+
+        self.grid.addWidget(self.pwadInfo, 4, 1, 4, 1)0
