@@ -13,6 +13,7 @@ class LaunchButton(QPushButton):
         pwadList,
         optionsInput,
         logWindow,
+        loadingWindow,
     ):
         super().__init__("Launch")
         self.portPathInput = portPathInput
@@ -20,6 +21,7 @@ class LaunchButton(QPushButton):
         self.pwadList = pwadList
         self.optionsInput = optionsInput
         self.logWindow = logWindow
+        self.loadingWindow = loadingWindow
         self.process = QProcess()
         self.process.readyReadStandardOutput.connect(self._readOutput)
         self.process.readyReadStandardError.connect(self._readOutput)
@@ -30,6 +32,12 @@ class LaunchButton(QPushButton):
         """Launch the source port and display its output."""
         self.logWindow.textEdit.clear()
         self.logWindow.show()
+
+        self.loadingWindow.setRange(0, 0)
+        self.loadingWindow.setValue(0)
+        self.loadingWindow.show()
+        self.process.started.connect(self.loadingWindow.hide)
+        self.process.finished.connect(self.loadingWindow.hide)
 
         QApplication.setOverrideCursor(Qt.WaitCursor)
         self.process.finished.connect(QApplication.restoreOverrideCursor)

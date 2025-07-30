@@ -16,6 +16,7 @@ from src.widgets.path_input import PathInput
 from src.widgets.launch_button import LaunchButton
 from src.widgets.log_window import LogWindow
 from src.widgets.pwad_info import PWadInfo
+from src.widgets.lost_soul_window import LostSoulWindow
 from pathlib import Path, PurePath
 
 
@@ -115,6 +116,7 @@ class MainWindow(QMainWindow):
         glow.setOffset(0)
         self.lostSoulLabel.setGraphicsEffect(glow)
         self.logWindow = LogWindow(self)
+        self.loadingWindow = LostSoulWindow(self)
         self.pwadInfo = PWadInfo()
         self.launchButton = LaunchButton(
             self.sourcePortPathInput,
@@ -122,6 +124,7 @@ class MainWindow(QMainWindow):
             self.pwadList,
             self.extraOptionsInput,
             self.logWindow,
+            self.loadingWindow,
         )
         self.pwadList.itemSelectionChanged.connect(self.updatePWadInfo)
         self.updatePWadInfo()
@@ -178,18 +181,14 @@ class MainWindow(QMainWindow):
         self.iwadInput.setText(wad)
 
     def addPWads(self, wads: list):
-        progress = QProgressDialog(
-            "Loading mods...", "Cancel", 0, len(wads), self
-        )
-        progress.setWindowModality(Qt.ApplicationModal)
-        progress.setAutoClose(True)
-        progress.setMinimumDuration(0)
+        dialog = self.loadingWindow
+        dialog.setRange(0, len(wads))
+        dialog.setValue(0)
+        dialog.show()
         QApplication.setOverrideCursor(Qt.WaitCursor)
         try:
             for i, wad in enumerate(wads):
-                progress.setValue(i)
-                if progress.wasCanceled():
-                    break
+                dialog.setValue(i)
                 if not self.pwadList.addWad(wad):
                     msg = (
                         f"The wad {wad} has already "
@@ -197,10 +196,10 @@ class MainWindow(QMainWindow):
                     )
                     self.errorDialog.showMessage(msg)
                 QApplication.processEvents()
-            progress.setValue(len(wads))
+            dialog.setValue(len(wads))
         finally:
             QApplication.restoreOverrideCursor()
-            progress.close()
+            dialog.hide()
         self.saveConfig()
 
     def removeSelectedPWads(self):
