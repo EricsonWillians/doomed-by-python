@@ -5,11 +5,13 @@ from PyQt5.QtCore import QEvent
 from PyQt5.QtWidgets import *  # noqa: F401,F403
 from PyQt5.QtGui import QMovie
 from src import const
+
 from .actions.open_source_port_action import OpenSourcePortAction
 from .actions.open_iwad_action import OpenIWadAction
 from .actions.open_pwad_action import OpenPWadAction
 from .actions.open_wad_repository import OpenWadRepository
 from .actions.exit_action import ExitAction
+
 from src.widgets.iwad_input import IWadInput
 from src.widgets.pwad_list import PWadList
 from src.widgets.path_input import PathInput
@@ -17,8 +19,9 @@ from src.widgets.launch_button import LaunchButton
 from src.widgets.log_window import LogWindow
 from src.widgets.pwad_info import PWadInfo
 from src.widgets.lost_soul_window import LostSoulWindow
-from pathlib import Path, PurePath
+from src.widgets.doom_soul_widget import DoomSoulWidget
 
+from pathlib import Path, PurePath
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -73,6 +76,7 @@ class MainWindow(QMainWindow):
         iwadLayout.addWidget(self.iwadInput)
         iwadLayout.addWidget(self.iwadBrowseButton)
         self.iwadInputContainer.setLayout(iwadLayout)
+
         self.pwadListLabel = QLabel("PWAD List:")
         self.pwadList = PWadList()
         self.pwadList.setSizePolicy(
@@ -100,21 +104,16 @@ class MainWindow(QMainWindow):
         pwadBtnsLayout.addWidget(self.pwadUpButton)
         pwadBtnsLayout.addWidget(self.pwadDownButton)
         self.pwadButtons.setLayout(pwadBtnsLayout)
+
         self.extraOptionsLabel = QLabel("Extra Options:")
         self.extraOptionsInput = QLineEdit()
         self.extraOptionsInput.setToolTip('Additional command line arguments')
         self.extraOptionsInput.setText(self.config.get('lastOptions', ''))
-        self.lostSoulLabel = QLabel()
-        movie = QMovie("assets/lost_soul.gif")
-        self.lostSoulLabel.setMovie(movie)
-        movie.start()
-        self.lostSoulLabel.setObjectName('lostSoul')
-        self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
-        glow = QGraphicsDropShadowEffect()
-        glow.setBlurRadius(15)
-        glow.setColor(Qt.darkRed)
-        glow.setOffset(0)
-        self.lostSoulLabel.setGraphicsEffect(glow)
+
+        self.lostSoulWidget = DoomSoulWidget(skull_gif_path="assets/lost_soul.gif")
+
+        # -----------------------------------------
+
         self.logWindow = LogWindow(self)
         self.loadingWindow = LostSoulWindow(self)
         self.pwadInfo = PWadInfo()
@@ -139,7 +138,6 @@ class MainWindow(QMainWindow):
         self.openPWadAction = OpenPWadAction(
             self, self.addPWads, self.config, self.saveWadPath)
         self.openWadRepository = OpenWadRepository(self)
-
         self.exitAction = ExitAction(self)
 
         menuBar = self.menuBar()
@@ -161,7 +159,9 @@ class MainWindow(QMainWindow):
         self.grid.addWidget(self.pwadButtons, 6, 0)
         self.grid.addWidget(self.extraOptionsLabel, 7, 0)
         self.grid.addWidget(self.extraOptionsInput, 8, 0)
-        self.grid.addWidget(self.lostSoulLabel, 0, 1, 4, 1, Qt.AlignTop)
+        # ---- use lostSoulWidget, not lostSoulLabel
+        self.lostSoulWidget.setMinimumSize(180, 180)
+        self.grid.addWidget(self.lostSoulWidget, 0, 1, 4, 1, Qt.AlignTop)
         self.grid.addWidget(self.pwadInfo, 4, 1, 4, 1)
         self.grid.addWidget(self.launchButton, 8, 1, Qt.AlignBottom)
 

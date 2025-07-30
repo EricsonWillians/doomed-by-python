@@ -1,3 +1,6 @@
+/* ===== UNIVERSAL 90s DOS/DOOM RETRO THEME ===== */
+
+/* All widgets: dark blue, yellow text, chunky font */
 QWidget {
     background-color: #000080;
     color: #FFFF00;
@@ -5,82 +8,197 @@ QWidget {
     font-size: 11pt;
 }
 
+/* Inputs, lists, plain text: slightly deeper blue, gold border */
 QLineEdit, QListWidget, QTreeWidget, QPlainTextEdit {
     background-color: #000040;
     color: #FFFF00;
-    border: 1px solid #FFFF00;
+    border: 2px solid #FFFF00;
+    padding: 3px;
+    selection-background-color: #800000;
+    selection-color: #FFFF00;
 }
 
+/* Classic buttons */
 QPushButton {
     background-color: #000040;
     color: #FFFF00;
-    border: 1px solid #FFFF00;
-    padding: 4px;
+    border: 2px outset #FFFF00;
+    padding: 4px 18px;
+    margin: 2px;
+}
+QPushButton:pressed {
+    background-color: #800000;
+    border: 2px inset #FFFF00;
 }
 
+/* Menu bar/menus: DOS style */
 QMenuBar, QMenu {
     background-color: #000080;
     color: #FFFF00;
+    border: 1px solid #FFFF00;
 }
-
 QMenu::item:selected {
-    background-color: #0000A0;
+    background-color: #800000;
+    color: #FFFF00;
+    border: 1px solid #FFFF00;
 }
 
+/* Table/list headers */
 QHeaderView::section {
     background-color: #000060;
     color: #FFFF00;
     border: 1px solid #FFFF00;
+    font-weight: bold;
+    padding: 2px;
 }
 
+/* Progress bar: red fill */
 QProgressBar {
     background-color: #000040;
     color: #FFFF00;
-    border: 1px solid #FFFF00;
+    border: 2px solid #FFFF00;
+    border-radius: 4px;
+    text-align: center;
+    height: 22px;
 }
-
 QProgressBar::chunk {
     background-color: #800000;
+    width: 16px;
+    margin: 0.5px;
 }
 
-QTreeWidget::item:selected, QListWidget::item:selected {
-    background-color: #800000;
-}
-
-QScrollBar:vertical {
+/* Scrollbars: yellow frame, red handle */
+QScrollBar:vertical, QScrollBar:horizontal {
     background: #000040;
-    width: 14px;
+    border: 2px solid #FFFF00;
+    width: 16px;
+    margin: 16px 0 16px 0;
 }
-
-QScrollBar::handle:vertical {
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
     background: #800000;
+    border-radius: 4px;
     min-height: 20px;
 }
-
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+QScrollBar::add-line, QScrollBar::sub-line {
     background: #000060;
-    height: 14px;
+    border: 1px solid #FFFF00;
+    height: 16px;
 }
-
-QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+QScrollBar::up-arrow, QScrollBar::down-arrow,
+QScrollBar::left-arrow, QScrollBar::right-arrow {
+    width: 14px;
+    height: 14px;
+    background: #000060;
     border: none;
 }
 
-/* Hellish touches */
+/* Selection color for lists and trees */
+QTreeWidget::item:selected, QListWidget::item:selected {
+    background-color: #800000;
+    color: #FFFF00;
+}
+
+/* Main window: fake CRT gradient (optional) */
 QMainWindow {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                      stop:0 #300000, stop:1 #100000);
+                                      stop:0 #28003a, stop:1 #000010);
+    border: 2px solid #bd2738;
 }
 
+/* LOST SOUL: "bloody" hell effect */
+QWidget#bloodyContainer {
+    background: #a00000;
+    border: 6px solid #FF2222;
+    border-radius: 16px;
+    /* box-shadow: 0 0 30px 8px #FF2222; */
+}
+
+/* LOST SOUL GIF LABEL: no border, no extra space */
 QLabel#lostSoul {
+    background: transparent;
     border: none;
+    padding: 0;
+    margin: 0;
 }
 
+/* Lost Soul Window dialog: thick gold frame */
 QDialog#lostSoulWindow {
     background-color: #000040;
-    border: 2px solid #FFFF00;
+    border: 4px solid #FFFF00;
+    border-radius: 12px;
+    padding: 18px;
 }
 
+/* Lost Soul progress chunk: DOOM red */
 QDialog#lostSoulWindow QProgressBar::chunk {
     background-color: #800000;
 }
+
+/* Group boxes: blocky, gold frame */
+QGroupBox {
+    border: 2px solid #FFFF00;
+    margin-top: 8px;
+    background: #000060;
+    color: #FFFF00;
+    font-weight: bold;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 6px 0 6px;
+    background: #000060;
+}
+
+/* Mod Info: DOOM shareware warning style! */
+QTextEdit#doomModInfo, QPlainTextEdit#doomModInfo {
+    background-color: #C00000;         /* DOOM red */
+    color: #FFFF00;                    /* Yellow text */
+    font-family: "Fixedsys", "Terminal", "Courier New", monospace;
+    font-size: 13pt;
+    border: 3px solid #FFFF00;         /* Yellow border */
+    border-radius: 0px;
+    padding: 18px;
+    selection-background-color: #000080;
+    selection-color: #FFFF00;
+    /* Optional: emulate old CRT ghosting:
+    text-shadow: 0 0 2px #FFFF00, 0 0 6px #800000;
+    */
+}
+
+/* Blue links/highlights in Mod Info (QTextEdit only) */
+QTextEdit#doomModInfo a {
+    color: #66B3FF;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+QTextEdit#doomModInfo b, QPlainTextEdit#doomModInfo b {
+    font-weight: bold;
+    color: #FFFF80;
+}
+
+QTextEdit#doomModInfo u, QPlainTextEdit#doomModInfo u {
+    text-decoration: underline;
+}
+
+QTextEdit#doomModInfo .doom-section, QPlainTextEdit#doomModInfo .doom-section {
+    font-weight: bold;
+    color: #FFFF80;
+    text-decoration: underline;
+}
+
+/* Tooltip: red/yellow */
+QToolTip {
+    background: #800000;
+    color: #FFFF00;
+    border: 2px solid #FFFF00;
+    font-family: "Fixedsys", "Terminal", "Courier New", monospace;
+    font-size: 10pt;
+}
+
+/* Remove focus rectangles for pure DOS */
+*:focus {
+    outline: none;
+}
+
+/* ===== END ===== */
