@@ -11,8 +11,18 @@ Doomed by Python is a sophisticated and efficient mod launcher designed for GZDo
 - **Launch Options Persistence:** Save your previously selected launch options in a JSON file for quick and easy future access.
 - **Real-Time Log Window:** View GZDoom output in a separate window for easier debugging.
 - **Detailed Mod Info:** Selecting a PWAD displays its contents, size, and modification time.
-- **Hellish Visuals:** Fiery theme and glowing skull for a more immersive look.
-- **Loading Feedback:** A busy cursor appears when large mods are processed.
+- **Hellish Visuals:** Fiery blue terminal theme with an animated lost soul GIF.
+- **Loading Feedback:** Progress dialog and busy cursor appear while large mods are processed.
+
+| **Feature** | **Summary** |
+|-------------|-------------|
+| **IWAD Chooser** | Select the desired IWAD before launching |
+| **Multiple PWAD Selection** | Add several PWADs at once |
+| **Launch Options Persistence** | Save and restore your command-line settings |
+| **Real-Time Log Window** | Watch GZDoom output for debugging |
+| **Detailed Mod Info** | Inspect PWAD contents, size, and timestamps |
+| **Hellish Visuals** | Retro terminal theme with an animated lost soul |
+| **Loading Feedback** | Busy cursor and progress dialog while mods load |
 
 ## Planned Enhancements
 

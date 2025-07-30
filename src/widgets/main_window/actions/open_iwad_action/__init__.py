@@ -1,6 +1,4 @@
-import json
 from PyQt5.QtWidgets import QAction, QFileDialog
-from os import path
 
 
 class OpenIWadAction(QAction):

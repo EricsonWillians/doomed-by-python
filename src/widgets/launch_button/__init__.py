@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QPushButton, QApplication
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QProcess
 import shlex
@@ -30,6 +30,10 @@ class LaunchButton(QPushButton):
         """Launch the source port and display its output."""
         self.logWindow.textEdit.clear()
         self.logWindow.show()
+
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        self.process.finished.connect(QApplication.restoreOverrideCursor)
+        self.process.started.connect(QApplication.restoreOverrideCursor)
 
         wads = [item.data(0, Qt.UserRole) for item in self.pwadList.getItems()]
         args = []

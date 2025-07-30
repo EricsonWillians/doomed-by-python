@@ -2,8 +2,8 @@ import sys
 import json
 from PyQt5.Qt import Qt
 from PyQt5.QtCore import QEvent
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import *  # noqa: F401,F403
+from PyQt5.QtGui import QMovie
 from src import const
 from .actions.open_source_port_action import OpenSourcePortAction
 from .actions.open_iwad_action import OpenIWadAction
@@ -104,9 +104,10 @@ class MainWindow(QMainWindow):
         self.extraOptionsInput.setToolTip('Additional command line arguments')
         self.extraOptionsInput.setText(self.config.get('lastOptions', ''))
         self.lostSoulLabel = QLabel()
+        movie = QMovie("assets/lost_soul.gif")
+        self.lostSoulLabel.setMovie(movie)
+        movie.start()
         self.lostSoulLabel.setObjectName('lostSoul')
-        self.lostSoulPixmap = QPixmap("assets/lost_soul_sprite.png")
-        self.lostSoulLabel.setPixmap(self.lostSoulPixmap)
         self.lostSoulLabel.setAlignment(Qt.AlignHCenter)
         glow = QGraphicsDropShadowEffect()
         glow.setBlurRadius(20)
@@ -177,9 +178,18 @@ class MainWindow(QMainWindow):
         self.iwadInput.setText(wad)
 
     def addPWads(self, wads: list):
+        progress = QProgressDialog(
+            "Loading mods...", "Cancel", 0, len(wads), self
+        )
+        progress.setWindowModality(Qt.ApplicationModal)
+        progress.setAutoClose(True)
+        progress.setMinimumDuration(0)
         QApplication.setOverrideCursor(Qt.WaitCursor)
         try:
-            for wad in wads:
+            for i, wad in enumerate(wads):
+                progress.setValue(i)
+                if progress.wasCanceled():
+                    break
                 if not self.pwadList.addWad(wad):
                     msg = (
                         f"The wad {wad} has already "
@@ -187,8 +197,10 @@ class MainWindow(QMainWindow):
                     )
                     self.errorDialog.showMessage(msg)
                 QApplication.processEvents()
+            progress.setValue(len(wads))
         finally:
             QApplication.restoreOverrideCursor()
+            progress.close()
         self.saveConfig()
 
     def removeSelectedPWads(self):

@@ -1,7 +1,8 @@
 QWidget {
     background-color: #000080;
     color: #FFFF00;
-    font-family: "Courier New", monospace;
+    font-family: "Fixedsys", "Terminal", "Courier New", monospace;
+    font-size: 11pt;
 }
 
 QLineEdit, QListWidget, QTreeWidget, QPlainTextEdit {
@@ -30,6 +31,39 @@ QHeaderView::section {
     background-color: #000060;
     color: #FFFF00;
     border: 1px solid #FFFF00;
+}
+
+QProgressBar {
+    background-color: #000040;
+    color: #FFFF00;
+    border: 1px solid #FFFF00;
+}
+
+QProgressBar::chunk {
+    background-color: #800000;
+}
+
+QTreeWidget::item:selected, QListWidget::item:selected {
+    background-color: #800000;
+}
+
+QScrollBar:vertical {
+    background: #000040;
+    width: 14px;
+}
+
+QScrollBar::handle:vertical {
+    background: #800000;
+    min-height: 20px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    background: #000060;
+    height: 14px;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+    border: none;
 }
 
 /* Hellish touches */

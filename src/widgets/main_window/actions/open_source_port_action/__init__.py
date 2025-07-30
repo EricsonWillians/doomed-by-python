@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import QAction, QFileDialog, QDialog, QFileSystemModel
 from PyQt5.QtCore import QSortFilterProxyModel
-from os import path
 
 
 class ExecutableFilterModel(QSortFilterProxyModel):
