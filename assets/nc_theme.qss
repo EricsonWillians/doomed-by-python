@@ -75,3 +75,12 @@ QMainWindow {
 QLabel#lostSoul {
     border: none;
 }
+
+QDialog#lostSoulWindow {
+    background-color: #000040;
+    border: 2px solid #FFFF00;
+}
+
+QDialog#lostSoulWindow QProgressBar::chunk {
+    background-color: #800000;
+}
