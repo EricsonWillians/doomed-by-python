@@ -1,44 +1,47 @@
-# 💾 DOOMED BY PYTHON 💾
+# 💀 DOOMED BY PYTHON 💀
 
-![screenshot](./screenshot.png)
+![screenshot](./assets/screenshot.png)
 
-> **The most unnecessarily advanced, 90s-flavored GZDoom mod launcher ever coded in Python.**
->
-> _Crafted by Ericson Willians for Linux modders, DOOM obsessives, and retro terminal enjoyers everywhere._
-
----
-
-## 🚀 What Is This?
-
-“**Doomed by Python**” is a no-compromises, blue-on-blue, terminal-inspired launcher for **GZDoom**.  
-If you think GUIs should look like ANSI BBS screens, if you believe DOOM is best played with one hand on the CLI, or if you just want to see a Lost Soul haunting your desktop—this is for you.
+> **THE ULTIMATE GZDOOM LAUNCHER**  
+> _BORN OF HACKS. FORGED IN PYTHON. DESIGNED FOR THE TERMINAL-OBSESSED._  
+>  
+> _Written by Ericson Willians — Survivor of countless segmentation faults and WAD corruption events._
 
 ---
 
-## 🏆 Features (So 1994 It Hurts)
+## 🔥 "ABANDON ALL HOPE, YE WHO RUN THIS LAUNCHER" 🔥
 
-| **Feature**                 | **Summary**                                      |
-|-----------------------------|---------------------------------------------------|
-| IWAD Chooser                | Pick your main WAD before you descend into hell   |
-| Multiple PWAD Selection     | Stack mods like it’s 1995 and you just found cdrom.com |
-| Launch Option Persistence   | Remembers your last run so you don’t have to      |
-| Real-Time Log Window        | Watch GZDoom output scroll in a retro window      |
-| Mod Info Panel              | View mod contents, size, and file info instantly  |
-| Animated Lost Soul          | Hellish mascot floats above, taunting you         |
-| Ultra-90s Visuals           | ANSI-inspired blue + yellow, like a lost BBS      |
-| Loading Feedback            | Busy cursor & progress dialogs, just like Win95   |
+Welcome, mortal.  
+You stand at the gateway to **DOOMED BY PYTHON**—a launcher so retro, so blue, so absolutely *cursed* that even your config files might burst into flames.
+
+No more batch files. No more hand-editing command lines.  
+Just a *searing*, 90s BBS-inspired interface for GZDoom. Complete with a floating lost soul, ANSI colors, and real modder suffering.
 
 ---
 
-## 📸 Screenshot
+## 🪓 FEATURES STRAIGHT OUTTA ID SOFTWARE
 
-![Doomed by Python Screenshot](./assets/screenshot.png)
+| **HELLISH FEATURE**         | **WHAT IT DOES**                                         |
+|----------------------------|----------------------------------------------------------|
+| IWAD Selector              | Choose your fate: DOOM, DOOM II, or some eldritch WAD    |
+| PWAD Stack                 | Load ‘em up—slaughter your mods in any order             |
+| Launch Option Memory       | Your last rituals are remembered for next time           |
+| Live Log Window            | See GZDoom’s innermost secrets scroll by in real time    |
+| Mod Info Panel             | View mod sizes, file dates, and what you’re actually loading |
+| Animated Lost Soul         | A GIF demon taunts you, just like a 1994 CD-ROM shareware |
+| ANSI/CRT Visuals           | Blue backgrounds, yellow text, the full 90s DOS treatment|
+| Progress & Busy Cursor     | Loading big mods? Wait in terror, just like the old days |
 
 ---
 
-## 📝 How To Run
+## 📸 SCREENSHOT
 
-Copy, paste, play.  
+![DOOMED BY PYTHON in all its hellish glory](./assets/screenshot.png)
+
+---
+
+## 🚀 HOW TO RUN (INSTALL AT YOUR OWN RISK)
+
 ```bash
 git clone https://github.com/yourname/doomed-by-python.git
 cd doomed-by-python
