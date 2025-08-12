@@ -15,7 +15,8 @@ class LaunchButton(QPushButton):
         logWindow,
         loadingWindow,
     ):
-        super().__init__("Launch")
+        super().__init__("*** UNLEASH HELL ***")
+        self.setObjectName("launchButton")  # For CSS styling
         self.portPathInput = portPathInput
         self.iwadInput = iwadInput
         self.pwadList = pwadList

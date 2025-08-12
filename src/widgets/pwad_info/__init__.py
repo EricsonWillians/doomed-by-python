@@ -71,11 +71,20 @@ def describe(path: str) -> str:
 class PWadInfo(QGroupBox):
     """Widget showing detailed information about selected mods."""
 
-    def __init__(self, title='Mod Info'):
+    def __init__(self, title='📁 Mod Info'):
         super().__init__(title)
         layout = QVBoxLayout()
+        layout.setContentsMargins(8, 8, 8, 8)
+        
         self.text = QPlainTextEdit()
         self.text.setReadOnly(True)
+        self.text.setObjectName("doomModInfo")  # For CSS styling
+        self.text.setMinimumHeight(100)
+        
+        # Set size policy for better resizing
+        from PyQt5.QtWidgets import QSizePolicy
+        self.text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
         layout.addWidget(self.text)
         self.setLayout(layout)
 

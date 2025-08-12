@@ -2,36 +2,82 @@ import numpy as np
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QProgressBar, QWidget, QHBoxLayout, QSizePolicy
 )
-from PyQt5.QtGui import QMovie, QPixmap, QColor, QImage, QPainter
-from PyQt5.QtCore import Qt, QSize, QTimer
+from PyQt5.QtGui import QMovie, QPixmap, QColor, QImage, QPainter, QPainterPath
+from PyQt5.QtCore import Qt, QSize, QTimer, QRectF
+
+# Import performance settings with fallback
+try:
+    from src.performance import perf_settings
+except ImportError:
+    class FallbackPerfSettings:
+        def get(self, key, default=None):
+            defaults = {'animation_fps': 20, 'enable_antialiasing': False}
+            return defaults.get(key, default)
+        def get_timer_interval(self):
+            return 50
+    perf_settings = FallbackPerfSettings()
+
+class BloodTextureCache:
+    """Cache for pre-generated blood texture frames to avoid real-time generation."""
+    _instance = None
+    _cache = {}
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
+    def get_texture(self, width, height, frame):
+        key = (width, height, frame)
+        if key not in self._cache:
+            self._cache[key] = self._generate_blood_frame(width, height, frame)
+            # Limit cache size to prevent memory issues
+            if len(self._cache) > 100:
+                # Remove oldest entries
+                oldest_key = next(iter(self._cache))
+                del self._cache[oldest_key]
+        return self._cache[key]
+    
+    def _generate_blood_frame(self, width, height, t):
+        """Generate a single blood texture frame - optimized version."""
+        # Pre-calculate common values
+        base = np.zeros((height, width, 3), dtype=np.uint8)
+        
+        # Vectorized operations for better performance
+        y_indices = np.arange(height).reshape(-1, 1)
+        x_indices = np.arange(width).reshape(1, -1)
+        
+        # Base color calculations (vectorized)
+        ymod = (y_indices + t // 3) % height
+        r_base = 160 + 40 * np.sin(ymod * 0.18 + t * 0.04)
+        g_base = 0 + 18 * np.cos(ymod * 0.13 + t * 0.03)
+        b_base = 0 + 10 * np.sin(ymod * 0.27 + t * 0.01)
+        
+        # Wave effects (vectorized)
+        blood_wave = 10 * np.sin((x_indices + t) * 0.09 + ymod * 0.08)
+        drip = 18 * np.cos(x_indices * 0.08 + t * 0.06)
+        
+        # Combine and clip
+        red = np.clip(r_base + blood_wave + drip, 90, 255)
+        green = np.clip(g_base + 6 * np.sin(x_indices * 0.15), 0, 64)
+        blue = np.clip(b_base + 8 * np.cos(x_indices * 0.12), 0, 40)
+        
+        base[:, :, 0] = red
+        base[:, :, 1] = green
+        base[:, :, 2] = blue
+        
+        image = QImage(base.data, width, height, 3 * width, QImage.Format_RGB888)
+        return QPixmap.fromImage(image)
 
 def generate_doom2_blood_texture(width, height, t=0):
-    """
-    Returns a QPixmap of a scrolling, animated DOOM2-style blood river.
-    t: animation phase/scroll (in pixels).
-    """
-    # Procedural blood river: sine + noise + red palette
-    base = np.zeros((height, width, 3), dtype=np.uint8)
-    for y in range(height):
-        ymod = (y + t // 3) % height
-        r = int(160 + 40 * np.sin(ymod * 0.18 + t * 0.04))
-        g = int(0 + 18 * np.cos(ymod * 0.13 + t * 0.03))
-        b = int(0 + 10 * np.sin(ymod * 0.27 + t * 0.01))
-        for x in range(width):
-            blood_wave = 10 * np.sin((x + t) * 0.09 + ymod * 0.08)
-            drip = 18 * np.cos(x * 0.08 + t * 0.06)
-            noise = np.random.randint(-8, 8)
-            red = np.clip(r + blood_wave + drip + noise, 90, 255)
-            green = np.clip(g + 6 * np.sin(x * 0.15), 0, 64)
-            blue = np.clip(b + 8 * np.cos(x * 0.12), 0, 40)
-            base[y, x, 0] = red
-            base[y, x, 1] = green
-            base[y, x, 2] = blue
-    image = QImage(base.data, width, height, 3 * width, QImage.Format_RGB888)
-    return QPixmap.fromImage(image)
+    """Optimized blood texture generation using cache."""
+    cache = BloodTextureCache()
+    # Reduce frame granularity to improve cache hits
+    frame = (t // 4) % 60  # 60 cached frames should be enough
+    return cache.get_texture(width, height, frame)
 
 class ScrollingDoom2Texture(QWidget):
-    """A widget with a procedural, scrolling DOOM2 blood texture background."""
+    """Optimized widget with cached blood texture background."""
     def __init__(self, w, h, border=4, radius=20, parent=None):
         super().__init__(parent)
         self.setFixedSize(w, h)
@@ -43,33 +89,42 @@ class ScrollingDoom2Texture(QWidget):
         self._pixmap = generate_doom2_blood_texture(self._texture_width, self._texture_height)
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._scroll_texture)
-        self._timer.start(38)  # 26 FPS
+        self._timer.start(perf_settings.get_timer_interval())  # Use performance-optimized interval
+        
+        # Pre-create the clipping path for better performance
+        self._clip_path = QPainterPath()
+        self._clip_path.addRoundedRect(QRectF(self.rect()), self._radius, self._radius)
 
     def _scroll_texture(self):
-        self._scroll = (self._scroll + 2) % self._texture_width
-        self._pixmap = generate_doom2_blood_texture(self._texture_width, self._texture_height, self._scroll)
+        self._scroll = (self._scroll + 1) % self._texture_width  # Slower scroll
+        # Only update pixmap every few frames to reduce CPU usage
+        if self._scroll % 3 == 0:
+            self._pixmap = generate_doom2_blood_texture(self._texture_width, self._texture_height, self._scroll)
         self.update()
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        # Draw rounded border/background
-        rect = self.rect()
-        path = QPainterPath()
-        path.addRoundedRect(rect, self._radius, self._radius)
-        painter.setClipPath(path)
+        painter.setRenderHint(QPainter.Antialiasing, perf_settings.get('enable_antialiasing', False))
+        
+        # Use pre-created clipping path
+        painter.setClipPath(self._clip_path)
 
-        # Tile the procedural texture
-        for x in range(0, self.width(), self._texture_width):
-            for y in range(0, self.height(), self._texture_height):
+        # Optimized tiling - only draw visible tiles
+        visible_rect = event.rect()
+        start_x = (visible_rect.x() // self._texture_width) * self._texture_width
+        start_y = (visible_rect.y() // self._texture_height) * self._texture_height
+        end_x = visible_rect.right() + self._texture_width
+        end_y = visible_rect.bottom() + self._texture_height
+        
+        for x in range(start_x, end_x, self._texture_width):
+            for y in range(start_y, end_y, self._texture_height):
                 painter.drawPixmap(x, y, self._pixmap)
 
-        # Draw the border
-        pen = QColor('#ff2222')
+        # Draw the border (simplified)
         painter.setPen(QColor('#ff2222'))
         painter.setBrush(Qt.NoBrush)
         painter.drawRoundedRect(
-            rect.adjusted(self._border//2, self._border//2, -self._border//2, -self._border//2),
+            self.rect().adjusted(self._border//2, self._border//2, -self._border//2, -self._border//2),
             self._radius, self._radius
         )
 
